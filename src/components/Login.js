@@ -1,8 +1,33 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React,{useState} from "react";
+import { NavLink, Navigate, useNavigate } from "react-router-dom";
 import logo from "../images/group.jpg";
 
 const Login = () => {
+  const navigate= useNavigate()
+  const [email,setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const loginData = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch('/signin',{
+      method:"POST",
+      headers:{
+        "content-type" : "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    })
+    const data = await res.json()
+    if(data.status === 422 || !data){
+      alert('login unsuccessful')
+    }else{
+      alert('login Successful')
+      navigate('/')
+    }
+  }
   return (
     <>
       <section className="login">
@@ -13,6 +38,7 @@ const Login = () => {
               Create an account
             </NavLink>
           </div>
+          <form method="POST">
           <div className="login-input">
             <div className="login-text">
               <h3 className="login-head">Sign in</h3>
@@ -27,6 +53,8 @@ const Login = () => {
                 placeholder="Your email"
                 autoComplete="off"
                 className="login-field"
+                value={email}
+                onChange={(e) => {setEmail(e.target.email)}}
               ></input>
             </div>
             <div className="login-form-group">
@@ -39,14 +67,17 @@ const Login = () => {
                 placeholder="Password"
                 autoComplete="off"
                 className="login-field"
+                value={password}
+                onChange={(e) => {setPassword(e.target.password)}}
               ></input>
             </div>
             <div className="btn-text">
-              <button type="submit" className="btn">
+              <button type="submit" className="btn" name="signin" onClick={loginData}>
                 Login
               </button>
             </div>
           </div>
+          </form>
         </div>
       </section>
     </>
